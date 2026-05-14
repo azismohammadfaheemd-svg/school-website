@@ -8,19 +8,56 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.admin-shell button,
+.admin-shell a[href],
+.admin-shell input::file-selector-button {
+  cursor: pointer;
+}
+
+.admin-shell button,
+.admin-shell a[href],
+.admin-shell input::file-selector-button {
+  transition-property:
+    color, background-color, border-color, box-shadow, transform, opacity;
+  transition-duration: 150ms;
+  transition-timing-function: ease;
+}
+
+.admin-shell button:not(:disabled):hover,
+.admin-shell a[href]:hover,
+.admin-shell input::file-selector-button:hover {
+  box-shadow: 0 10px 18px -14px rgba(15, 23, 42, 0.55);
+  transform: translateY(-1px);
+}
+
+.admin-shell button:not(:disabled):active,
+.admin-shell a[href]:active,
+.admin-shell input::file-selector-button:active {
+  box-shadow: inset 0 2px 6px rgba(15, 23, 42, 0.22);
+  transform: scale(0.97);
+}
+
+.admin-shell button:focus-visible,
+.admin-shell a[href]:focus-visible,
+.admin-shell input:focus-visible,
+.admin-shell select:focus-visible,
+.admin-shell textarea:focus-visible {
+  outline: 3px solid rgba(250, 204, 21, 0.75);
+  outline-offset: 2px;
+}
+
+.admin-shell button:disabled,
+.admin-shell input:disabled::file-selector-button {
+  cursor: not-allowed;
+  opacity: 0.72;
+  transform: none;
+  box-shadow: none;
 }

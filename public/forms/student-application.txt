@@ -1,0 +1,9 @@
+Greenfield Senior High School
+Student Application Form
+
+Student name:
+Incoming grade level:
+Preferred strand:
+Parent or guardian name:
+Contact number:
+Email address:
