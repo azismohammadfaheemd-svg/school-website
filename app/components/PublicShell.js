@@ -141,39 +141,39 @@ export default function PublicShell({ children }) {
   return (
     <div className="flex min-h-screen flex-col">
       <header className="border-b border-sky-100 bg-white">
-        <nav className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-5 sm:flex-row sm:items-center sm:justify-between lg:px-8">
+        <nav className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-3 sm:flex-row sm:items-center sm:justify-between sm:py-4 lg:px-8">
           <Link href="/" className="flex items-center gap-3">
             {hasLogo ? (
               <img
                 src={settings.logo_url}
                 alt={`${settings.site_name} logo`}
-                className="h-16 w-16 object-contain sm:h-[90px] sm:w-[90px]"
+                className="h-12 w-12 object-contain sm:h-14 sm:w-14"
                 onError={() => setLogoLoadFailed(true)}
               />
             ) : showDefaultLogo ? (
-              <span className="flex h-16 w-16 items-center justify-center rounded bg-sky-100 text-xl font-bold text-emerald-700 ring-1 ring-sky-200 sm:h-[90px] sm:w-[90px] sm:text-3xl">
+              <span className="flex h-12 w-12 items-center justify-center rounded bg-sky-100 text-lg font-bold text-emerald-700 ring-1 ring-sky-200 sm:h-14 sm:w-14 sm:text-xl">
                 GH
               </span>
             ) : (
               <span
-                className="block h-16 w-16 rounded bg-slate-100 ring-1 ring-slate-200 sm:h-[90px] sm:w-[90px]"
+                className="block h-12 w-12 rounded bg-slate-100 ring-1 ring-slate-200 sm:h-14 sm:w-14"
                 aria-hidden="true"
               />
             )}
-            <span>
-              <span className="block text-lg font-bold text-sky-950">
+            <span className="leading-tight">
+              <span className="block text-base font-bold text-sky-950 sm:text-lg">
                 <SiteBrandName
                   siteName={settings.site_name}
                   firstClassName="text-yellow-600"
                   restClassName="text-sky-950"
                 />
               </span>
-              <span className="block text-sm text-emerald-700">
+              <span className="block text-xs text-emerald-700 sm:text-sm">
                 Learn well. Live well.
               </span>
             </span>
           </Link>
-          <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold text-slate-700">
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-semibold text-slate-700">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
