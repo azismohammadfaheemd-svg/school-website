@@ -27,10 +27,41 @@ const defaultSettings = {
   office_hours: "",
 };
 
+const LOGO_URL_CACHE_KEY = "schoolWebsiteLogoUrl";
+
+function getCachedLogoUrl() {
+  if (typeof window === "undefined") {
+    return "";
+  }
+
+  try {
+    return window.localStorage.getItem(LOGO_URL_CACHE_KEY) || "";
+  } catch {
+    return "";
+  }
+}
+
+function cacheLogoUrl(logoUrl) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    if (logoUrl) {
+      window.localStorage.setItem(LOGO_URL_CACHE_KEY, logoUrl);
+    } else {
+      window.localStorage.removeItem(LOGO_URL_CACHE_KEY);
+    }
+  } catch {
+    // Ignore storage failures; the fetched settings still drive the UI.
+  }
+}
+
 export default function PublicShell({ children }) {
   const pathname = usePathname();
   const isAdminPage = pathname.startsWith("/admin");
   const [settings, setSettings] = useState(defaultSettings);
+  const [settingsLoaded, setSettingsLoaded] = useState(false);
   const [logoLoadFailed, setLogoLoadFailed] = useState(false);
 
   useEffect(() => {
@@ -41,29 +72,52 @@ export default function PublicShell({ children }) {
     }
 
     async function fetchSettings() {
-      const { data, error } = await supabase
-        .from("site_settings")
-        .select(
-          "site_name, logo_url, contact_number, email, address, facebook_url, office_hours, updated_at"
-        )
-        .order("updated_at", { ascending: false })
-        .limit(1);
+      const cachedLogoUrl = getCachedLogoUrl();
 
-      if (!isActive || error || !data?.[0]) {
-        return;
+      if (cachedLogoUrl) {
+        setSettings((currentSettings) => ({
+          ...currentSettings,
+          logo_url: cachedLogoUrl,
+        }));
+        setLogoLoadFailed(false);
       }
 
-      setSettings({
-        site_name: data[0].site_name || DEFAULT_SITE_NAME,
-        logo_url: data[0].logo_url || "",
-        contact_number:
-          data[0].contact_number || defaultSettings.contact_number,
-        email: data[0].email || defaultSettings.email,
-        address: data[0].address || defaultSettings.address,
-        facebook_url: data[0].facebook_url || "",
-        office_hours: data[0].office_hours || "",
-      });
-      setLogoLoadFailed(false);
+      try {
+        const { data, error } = await supabase
+          .from("site_settings")
+          .select(
+            "site_name, logo_url, contact_number, email, address, facebook_url, office_hours, updated_at"
+          )
+          .order("updated_at", { ascending: false })
+          .limit(1);
+
+        if (!isActive || error || !data?.[0]) {
+          if (isActive) {
+            setSettingsLoaded(true);
+          }
+          return;
+        }
+
+        const nextSettings = {
+          site_name: data[0].site_name || DEFAULT_SITE_NAME,
+          logo_url: data[0].logo_url || "",
+          contact_number:
+            data[0].contact_number || defaultSettings.contact_number,
+          email: data[0].email || defaultSettings.email,
+          address: data[0].address || defaultSettings.address,
+          facebook_url: data[0].facebook_url || "",
+          office_hours: data[0].office_hours || "",
+        };
+
+        setSettings(nextSettings);
+        setLogoLoadFailed(false);
+        setSettingsLoaded(true);
+        cacheLogoUrl(nextSettings.logo_url);
+      } catch {
+        if (isActive) {
+          setSettingsLoaded(true);
+        }
+      }
     }
 
     fetchSettings();
@@ -82,6 +136,7 @@ export default function PublicShell({ children }) {
     .map((line) => line.trim())
     .filter(Boolean);
   const hasLogo = settings.logo_url && !logoLoadFailed;
+  const showDefaultLogo = settingsLoaded && !hasLogo;
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -95,10 +150,15 @@ export default function PublicShell({ children }) {
                 className="h-16 w-16 object-contain sm:h-[90px] sm:w-[90px]"
                 onError={() => setLogoLoadFailed(true)}
               />
-            ) : (
+            ) : showDefaultLogo ? (
               <span className="flex h-16 w-16 items-center justify-center rounded bg-sky-100 text-xl font-bold text-emerald-700 ring-1 ring-sky-200 sm:h-[90px] sm:w-[90px] sm:text-3xl">
                 GH
               </span>
+            ) : (
+              <span
+                className="block h-16 w-16 rounded bg-slate-100 ring-1 ring-slate-200 sm:h-[90px] sm:w-[90px]"
+                aria-hidden="true"
+              />
             )}
             <span>
               <span className="block text-lg font-bold text-sky-950">
@@ -140,10 +200,15 @@ export default function PublicShell({ children }) {
                   className="h-14 w-14 object-contain"
                   onError={() => setLogoLoadFailed(true)}
                 />
-              ) : (
+              ) : showDefaultLogo ? (
                 <span className="flex size-11 items-center justify-center rounded bg-sky-100 text-lg font-bold text-emerald-700 ring-1 ring-sky-800">
                   GH
                 </span>
+              ) : (
+                <span
+                  className="block size-11 rounded bg-sky-900 ring-1 ring-sky-800"
+                  aria-hidden="true"
+                />
               )}
               <p className="text-lg font-bold text-emerald-200">
                 <SiteBrandName

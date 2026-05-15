@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import { scrollToSection } from "@/lib/scrollToSection";
 
 const initialForm = {
   eyebrow_text: "",
@@ -49,6 +50,7 @@ function extractSlideImagePath(imageUrl) {
 }
 
 export default function AdminSlidesPage() {
+  const formRef = useRef(null);
   const [formData, setFormData] = useState(initialForm);
   const [slides, setSlides] = useState([]);
   const [selectedImageFile, setSelectedImageFile] = useState(null);
@@ -180,6 +182,7 @@ export default function AdminSlidesPage() {
       sort_order: String(slide.sort_order ?? ""),
       status: slide.status || "draft",
     });
+    scrollToSection(formRef);
   }
 
   function cancelEdit() {
@@ -453,6 +456,7 @@ export default function AdminSlidesPage() {
 
       <div className="mt-8 grid gap-8 xl:grid-cols-[0.8fr_1.2fr]">
         <form
+          ref={formRef}
           onSubmit={handleSubmit}
           className="rounded border border-slate-200 bg-white p-6 shadow-sm"
         >

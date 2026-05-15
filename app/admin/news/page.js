@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
+import { scrollToSection } from "@/lib/scrollToSection";
 
 const initialForm = {
   title: "",
@@ -58,6 +59,7 @@ function formatDisplayDateTime(value) {
 
 export default function AdminNewsPage() {
   const router = useRouter();
+  const formRef = useRef(null);
   const [formData, setFormData] = useState(initialForm);
   const [newsItems, setNewsItems] = useState([]);
   const [selectedImageFile, setSelectedImageFile] = useState(null);
@@ -222,6 +224,7 @@ export default function AdminNewsPage() {
       is_published: Boolean(item.is_published),
       expires_at: formatDateTimeLocal(item.expires_at),
     });
+    scrollToSection(formRef);
   }
 
   function cancelEdit() {
@@ -508,6 +511,7 @@ export default function AdminNewsPage() {
 
       <div className="mt-8 grid gap-8 xl:grid-cols-[0.8fr_1.2fr]">
         <form
+          ref={formRef}
           onSubmit={handleSubmit}
           className="rounded border border-slate-200 bg-white p-6 shadow-sm"
         >

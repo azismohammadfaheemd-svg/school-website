@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import { scrollToSection } from "@/lib/scrollToSection";
 
 const initialForm = {
   title: "",
@@ -28,6 +29,7 @@ function getDurationText(duration) {
 }
 
 export default function AdminProgramsPage() {
+  const formRef = useRef(null);
   const [formData, setFormData] = useState(initialForm);
   const [programs, setPrograms] = useState([]);
   const [selectedImageFile, setSelectedImageFile] = useState(null);
@@ -144,6 +146,7 @@ export default function AdminProgramsPage() {
       requirements: program.requirements || "",
       status: program.status || "draft",
     });
+    scrollToSection(formRef);
   }
 
   function cancelEdit() {
@@ -362,6 +365,7 @@ export default function AdminProgramsPage() {
 
       <div className="mt-8 grid gap-8 xl:grid-cols-[0.8fr_1.2fr]">
         <form
+          ref={formRef}
           onSubmit={handleSubmit}
           className="rounded border border-slate-200 bg-white p-6 shadow-sm"
         >

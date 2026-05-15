@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element */
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import SiteBrandName, { DEFAULT_SITE_NAME } from "@/app/components/SiteBrandName";
 
@@ -42,6 +42,7 @@ function extractLogoPath(logoUrl) {
 }
 
 export default function AdminSettingsPage() {
+  const formRef = useRef(null);
   const [formData, setFormData] = useState(initialForm);
   const [settingsId, setSettingsId] = useState(null);
   const [selectedLogoFile, setSelectedLogoFile] = useState(null);
@@ -277,6 +278,7 @@ export default function AdminSettingsPage() {
       ) : (
         <div className="mt-8 grid gap-8 xl:grid-cols-[0.8fr_1.2fr]">
           <form
+            ref={formRef}
             onSubmit={handleSubmit}
             className="rounded border border-slate-200 bg-white p-6 shadow-sm"
           >

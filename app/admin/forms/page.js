@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import { scrollToSection } from "@/lib/scrollToSection";
 
 const initialForm = {
   title: "",
@@ -38,6 +39,7 @@ function formatDeadline(deadline) {
 }
 
 export default function AdminFormsPage() {
+  const formRef = useRef(null);
   const [formData, setFormData] = useState(initialForm);
   const [forms, setForms] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -153,6 +155,7 @@ export default function AdminFormsPage() {
       deadline: form.deadline || "",
       status: form.status || "draft",
     });
+    scrollToSection(formRef);
   }
 
   function cancelEdit() {
@@ -405,6 +408,7 @@ export default function AdminFormsPage() {
 
       <div className="mt-8 grid gap-8 xl:grid-cols-[0.8fr_1.2fr]">
         <form
+          ref={formRef}
           onSubmit={handleSubmit}
           className="rounded border border-slate-200 bg-white p-6 shadow-sm"
         >
